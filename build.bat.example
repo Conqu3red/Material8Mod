@@ -1,0 +1,8 @@
+@echo off
+SET name=Material8Mod
+SET pb2_path=..\Poly Bridge 2
+copy /Y  "%pb2_path%\Poly Bridge 2_Data\Managed\Assembly-CSharp.dll" "Libraries"
+copy /Y  "%pb2_path%\Poly Bridge 2_Data\Managed\Assembly-CSharp-firstpass.dll" "Libraries"
+dotnet build
+copy /Y "bin\Debug\netstandard2.0\%name%.dll" "%pb2_path%\BepInEx\plugins"
+xcopy /E /I /Y "BungeeRopeResources" "%pb2_path%\BepInEx\plugins\BungeeRopeResources"
