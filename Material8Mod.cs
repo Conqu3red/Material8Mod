@@ -30,7 +30,7 @@ namespace Material8Mod
         public new const string
             PluginGuid = "org.bepinex.plugins.Material8Mod",
             PluginName = "Material 8 Mod",
-            PluginVersion = "1.0.0";
+            PluginVersion = "1.0.1";
         
         public static Material8Mod instance;
         public static ConfigEntry<bool> modEnabled;
@@ -191,8 +191,13 @@ namespace Material8Mod
         [HarmonyPatch(typeof(GameUI), "StartManual")]
         public static class StartPatch {
             public static void Postfix(){
-                GameObject springButton = GameObject.Find("GameUI/Panel_BottomBar/Panel_Materials/NonRoadGroup/Spring");
-                GameObject cableButton = GameObject.Find("GameUI/Panel_BottomBar/Panel_Materials/NonRoadGroup/Cable");
+                string materialBar = "NonRoadGroup";
+                if (!GameObject.Find(materialBar)) {
+                    instance.Logger.LogInfo("'NonRoadGroup' not found, using 'MaterialBar'");
+                    materialBar = "MaterialBar";
+                }
+                GameObject springButton = GameObject.Find($"GameUI/Panel_BottomBar/Panel_Materials/{materialBar}/Spring");
+                GameObject cableButton = GameObject.Find($"GameUI/Panel_BottomBar/Panel_Materials/{materialBar}/Cable");
 
                 GameObject bungeeObject = GameObject.Instantiate(springButton);
                 bungeeObject.name = "Bungee_Rope";
@@ -200,7 +205,7 @@ namespace Material8Mod
                 bungee_button.name = "Button_Bungee";
                 bungee_button.transform.SetParent(bungeeObject.transform);
 
-                GameObject target = GameObject.Find("NonRoadGroup");
+                GameObject target = GameObject.Find(materialBar);
                 //instance.Logger.LogInfo($"target is null? {target == null}");
                 if (target != null) bungeeObject.transform.SetParent(target.transform);
                 
@@ -225,14 +230,14 @@ namespace Material8Mod
                 
                 //img.rectTransform.position = new Vector3(springTransform.position.x + 50f, springTransform.position.y, springTransform.position.z);
                 GameObject.Destroy(bungee_button.GetComponent<TwoStateButton>());
-                GameObject materialLimit = GameObject.Find("GameUI/Panel_BottomBar/Panel_Materials/NonRoadGroup/Bungee_Rope/MaterialLimit");
+                GameObject materialLimit = GameObject.Find($"GameUI/Panel_BottomBar/Panel_Materials/{materialBar}/Bungee_Rope/MaterialLimit");
                 RectTransform materialLimitT = materialLimit.GetComponent<RectTransform>();
                 materialLimitT.anchoredPosition = new Vector2(0, -5);
                 MaterialLimit ml = materialLimit.GetComponent<MaterialLimit>();
                 ml.gameObject.SetActive(false);
                 instance.m_BungeeMaterialLimit = ml;
 
-                GameObject DuckImageGameObject = GameObject.Find("GameUI/Panel_BottomBar/Panel_Materials/NonRoadGroup/Bungee_Rope/Button_Bungee/DuckImage");
+                GameObject DuckImageGameObject = GameObject.Find($"GameUI/Panel_BottomBar/Panel_Materials/{materialBar}/Bungee_Rope/Button_Bungee/DuckImage");
                 Image DuckImage = DuckImageGameObject.GetComponent<Image>();
                 DuckImage.sprite = instance.bungee;
 
